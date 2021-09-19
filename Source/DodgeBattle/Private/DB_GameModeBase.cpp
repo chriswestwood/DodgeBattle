@@ -4,6 +4,7 @@
 #include "DB_GameModeBase.h"
 #include "DB_Player.h"
 #include "UObject/ConstructorHelpers.h"
+#include "DB_PlayerHUD.h"
 
 ADB_GameModeBase::ADB_GameModeBase()
 {
@@ -13,10 +14,10 @@ ADB_GameModeBase::ADB_GameModeBase()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
-	// use our custom HUD class
-	static ConstructorHelpers::FClassFinder<ADB_PlayerHUD> PlayerHUDBPClass(TEXT("/Game/Actors/Widget/DB_PlayerHUDBP"));
-	if (PlayerHUDBPClass.Class != NULL)
+	// use the custom HUD class
+	static ConstructorHelpers::FClassFinder<AHUD> PlayerHUDClass(TEXT("/Game/Actors/DB_PlayerHUDBP"));
+	if (PlayerHUDClass.Class != NULL)
 	{
-		HUDClass = PlayerHUDBPClass.Class;
+		HUDClass = PlayerHUDClass.Class;
 	}
 }

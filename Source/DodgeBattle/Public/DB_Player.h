@@ -7,7 +7,6 @@
 #include "DB_Ball.h"
 #include "EnumTeam.h"
 #include "EnumBall.h"
-#include "DB_PlayerHUD.h"
 #include "DB_Player.generated.h"
 
 
@@ -94,7 +93,7 @@ protected:
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Team)
 		TEnumAsByte<Team> team;
 
-		TArray<TEnumAsByte<BallType>>* ballInv;
+		TArray<TEnumAsByte<BallType>> ballInv;
 
 		FVector_NetQuantize throwEndPoint;
 
