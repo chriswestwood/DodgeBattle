@@ -24,7 +24,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION()
-		void UpdateCrosshair(FVector location, FVector2D direction, float distance);
+		void UpdateCrosshair(FVector2D location, FVector2D direction, float distance);
 
 	UFUNCTION()
 		void UpdateStamina(float newStamina);

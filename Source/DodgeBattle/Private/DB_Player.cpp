@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "DB_PlayerHUD.h"
 
 // include draw debug helpers header file
 #include "DrawDebugHelpers.h"
@@ -55,7 +56,7 @@ ADB_Player::ADB_Player()
 	ThrowPoint->SetupAttachment(RootComponent);
 	ThrowPoint->SetRelativeLocation(FVector(10, 60, 60));
 	
-	DodgeCooldown = 30;
+	DodgeCooldown = 5;
 	DodgeCooldownTimer = 0;
 	moveSpeed = 1.0f;
 }
@@ -64,7 +65,7 @@ ADB_Player::ADB_Player()
 void ADB_Player::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	HUD = Cast<ADB_PlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 }
 
 void ADB_Player::Dodge()
@@ -72,7 +73,6 @@ void ADB_Player::Dodge()
 	if (DodgeCooldownTimer <= 0)
 	{
 		DodgeCooldownTimer = DodgeCooldown;
-
 	}
 }
 
@@ -150,7 +150,12 @@ void ADB_Player::LookUpAtRate(float Rate)
 void ADB_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (DodgeCooldownTimer >0) DodgeCooldownTimer -= DeltaTime;
+	if (DodgeCooldownTimer > 0)
+	{
+		DodgeCooldownTimer -= DeltaTime;
+		if (DodgeCooldownTimer < 0) DodgeCooldownTimer = 0;
+		if(HUD)HUD->UpdateStamina(DodgeCooldownTimer/DodgeCooldown);
+	}
 
 	// Calculate the vector the character is going to throw to
 	FHitResult OutHit;
@@ -174,6 +179,11 @@ void ADB_Player::Tick(float DeltaTime)
 			throwEndPoint = OutHit.ImpactPoint;
 		}
 	}
+	
+	FVector2D ScreenLocation;
+	const APlayerController* const PlayerController = Cast<const APlayerController>(GetController());
+	PlayerController->ProjectWorldLocationToScreen(throwEndPoint, ScreenLocation);
+	if (HUD)HUD->UpdateCrosshair(ScreenLocation,ScreenLocation,1.0f);
 }
 
 // Called to bind functionality to input

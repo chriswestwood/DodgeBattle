@@ -32,6 +32,7 @@ void ADB_PlayerHUD::BeginPlay()
 	{
 		/** Add it to the viewport */
 		staminaWidget->AddToViewport();
+		staminaWidget->SetRenderScale(FVector2D(0.0f, 1.0f));
 	}
 }
 
@@ -40,10 +41,12 @@ void ADB_PlayerHUD::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
-void ADB_PlayerHUD::UpdateCrosshair(FVector location, FVector2D direction, float distance)
+void ADB_PlayerHUD::UpdateCrosshair(FVector2D location, FVector2D direction, float distance)
 {
+	crosshairWidget->UpdateOutLocation(location,distance);
 }
 
 void ADB_PlayerHUD::UpdateStamina(float newStamina)
 {
+	staminaWidget->UpdateStaminaPercent(newStamina);
 }

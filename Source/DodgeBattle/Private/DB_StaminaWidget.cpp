@@ -14,19 +14,14 @@ void UDB_StaminaWidget::NativeConstruct()
 	{
 		StaminaBar->SetVisibility(ESlateVisibility::Visible);
 	}
-	StaminaNum = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("StaminaNum"));
-	if (StaminaNum)
-	{
-		StaminaNum->SetVisibility(ESlateVisibility::Visible);
-		StaminaNum->SetText(FText::FromString(("Test")));
-	}
 }
 
 void UDB_StaminaWidget::UpdateStaminaPercent(float percent)
 {
-	if (StaminaNum)
+	percent = FMath::Clamp(percent, 0.0f, 1.0f);
+	if (StaminaBar)
 	{
-		StaminaNum->SetText(FText::FromString((FString::SanitizeFloat(percent))));
+		SetRenderScale(FVector2D(percent,1.0f));
 	}
 
 }

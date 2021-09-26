@@ -19,8 +19,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UImage* StaminaBar;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		class UTextBlock* StaminaNum;
 	void UpdateStaminaPercent(float percent);
 
 };

@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DB_GameMode.h"
-#include "DB_GameModeFFA.generated.h"
+#include "GameFramework/PlayerState.h"
+#include "DB_PlayerState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DODGEBATTLE_API ADB_GameModeFFA : public ADB_GameMode
+class DODGEBATTLE_API ADB_PlayerState : public APlayerState
 {
 	GENERATED_BODY()
 	

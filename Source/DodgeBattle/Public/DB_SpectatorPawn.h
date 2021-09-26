@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DB_GameMode.h"
-#include "DB_GameModeFFA.generated.h"
+#include "GameFramework/SpectatorPawn.h"
+#include "DB_SpectatorPawn.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DODGEBATTLE_API ADB_GameModeFFA : public ADB_GameMode
+class DODGEBATTLE_API ADB_SpectatorPawn : public ASpectatorPawn
 {
 	GENERATED_BODY()
 	

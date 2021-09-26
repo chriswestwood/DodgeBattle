@@ -21,7 +21,7 @@ public:
 		class UImage* ImageOut;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UImage* ImageIn;
-	void UpdateOutLocation(FVector l, float scale);
+	void UpdateOutLocation(FVector2D l, float scale);
 	void UpdateInLocation(FVector2D d, float scale);
 
 };

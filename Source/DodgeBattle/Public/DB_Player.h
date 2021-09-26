@@ -97,4 +97,6 @@ protected:
 
 		FVector_NetQuantize throwEndPoint;
 
+		class ADB_PlayerHUD* HUD;
+
 };
