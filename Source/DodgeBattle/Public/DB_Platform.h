@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "DestructibleComponent.h"
 #include "EnumTeam.h"
 #include "DB_Platform.generated.h"
 
@@ -19,23 +18,25 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void UpdateTeam(TEnumAsByte<Team> newT);
+
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
-	UDestructibleComponent* DestructMeshComp;
+	class UDestructibleComponent* DestructMeshComp;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	void OnRep_LastHitTeam();
-
-	void onUpdateLastHit();
-
-
-	bool hasBeenHit;
-
-	int LastHitTeam;
+	void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Team)
-	TEnumAsByte<Team> team;
+	TEnumAsByte<Team> LastHitTeam;
+
+	UPROPERTY()
+	UMaterialInterface* WhiteMat;
+	UPROPERTY()
+	UMaterialInterface* BlueMat;
+	UPROPERTY()
+	UMaterialInterface* RedMat;
 };

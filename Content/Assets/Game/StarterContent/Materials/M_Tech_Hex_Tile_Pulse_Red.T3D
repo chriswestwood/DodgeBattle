@@ -1,0 +1,24 @@
+Begin Object Class=/Script/Engine.MaterialInstanceConstant Name="M_Tech_Hex_Tile_Pulse_Red"
+   Begin Object Class=/Script/UnrealEd.SceneThumbnailInfoWithPrimitive Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   Begin Object Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   ParameterStateId=E10372D74A75ECD318256DBE172DE56F
+   Parent=Material'"/Game/StarterContent/Materials/M_Tech_Hex_Tile_Pulse.M_Tech_Hex_Tile_Pulse"'
+   ScalarParameterValues(0)=(ParameterInfo=(Name="RefractionDepthBias"))
+   VectorParameterValues(0)=(ParameterInfo=(Name="Emissive color 01"),ParameterValue=(R=0.660000,G=0.000000,B=0.000000,A=1.000000),ExpressionGUID=8370AC744FD4C3280CB92886723F8D19)
+   VectorParameterValues(1)=(ParameterInfo=(Name="Emissive color 02"),ParameterValue=(R=0.125000,G=0.000000,B=0.000000,A=1.000000),ExpressionGUID=4A7731AF40C5DE186983198441861B3C)
+   BasePropertyOverrides=(OpacityMaskClipValue=0.333300)
+   ReferencedTextureGuids(0)=0A17556B4A7AD2CEA77696A59AB2DCFE
+   ReferencedTextureGuids(1)=F93262064295CC0E9B3CF9A2DB4CDECF
+   ReferencedTextureGuids(2)=0C068365468906DC61E61398C2297CBA
+   CachedReferencedTextures(0)=Texture2D'"/Game/StarterContent/Textures/T_Tech_Hex_Tile_N.T_Tech_Hex_Tile_N"'
+   CachedReferencedTextures(1)=Texture2D'"/Game/StarterContent/Textures/T_Tech_Hex_Tile_M.T_Tech_Hex_Tile_M"'
+   CachedReferencedTextures(2)=Texture2D'"/Game/StarterContent/Textures/T_MacroVariation.T_MacroVariation"'
+   TextureStreamingDataVersion=1
+   TextureStreamingData(0)=(SamplingScale=1.000000,UVChannelIndex=0,TextureName="T_MacroVariation",TextureReference=/Game/StarterContent/Textures/T_MacroVariation.T_MacroVariation)
+   TextureStreamingData(1)=(SamplingScale=0.935913,UVChannelIndex=0,TextureName="T_Tech_Hex_Tile_M",TextureReference=/Game/StarterContent/Textures/T_Tech_Hex_Tile_M.T_Tech_Hex_Tile_M)
+   TextureStreamingData(2)=(SamplingScale=0.939758,UVChannelIndex=0,TextureName="T_Tech_Hex_Tile_N",TextureReference=/Game/StarterContent/Textures/T_Tech_Hex_Tile_N.T_Tech_Hex_Tile_N)
+   ThumbnailInfo=SceneThumbnailInfoWithPrimitive'"SceneThumbnailInfoWithPrimitive_0"'
+   LightingGuid=489152E34717EBDEBAA48E9ED58CE727
+End Object

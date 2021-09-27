@@ -46,7 +46,12 @@ ADB_Ball::ADB_Ball()
 void ADB_Ball::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	ballCollisionComp->OnComponentHit.AddDynamic(this, &ADB_Ball::OnCompHit);
+}
+
+void ADB_Ball::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+
 }
 
 // Called every frame
@@ -69,5 +74,10 @@ void ADB_Ball::InitMomentum(const FVector momentumDirection)
 void ADB_Ball::UpdateVelocity(float DeltaTime)
 {
 	//ProjectileMovementComponent->Velocity += momentum * DeltaTime;
+}
+
+TEnumAsByte<Team> ADB_Ball::GetTeam()
+{
+	return team;
 }
 

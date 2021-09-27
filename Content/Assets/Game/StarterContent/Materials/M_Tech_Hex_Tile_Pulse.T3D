@@ -1,0 +1,337 @@
+Begin Object Class=/Script/Engine.Material Name="M_Tech_Hex_Tile_Pulse"
+   Begin Object Class=/Script/Engine.MaterialExpressionAdd Name="MaterialExpressionAdd_12"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionBumpOffset Name="MaterialExpressionBumpOffset_6"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionCeil Name="MaterialExpressionCeil_6"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionClamp Name="MaterialExpressionClamp_8"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComment Name="MaterialExpressionComment_40"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComment Name="MaterialExpressionComment_41"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComment Name="MaterialExpressionComment_42"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComment Name="MaterialExpressionComment_43"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComment Name="MaterialExpressionComment_44"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComment Name="MaterialExpressionComment_49"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionConstant Name="MaterialExpressionConstant_35"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionConstant Name="MaterialExpressionConstant_36"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionConstant Name="MaterialExpressionConstant_37"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionConstant Name="MaterialExpressionConstant_46"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionLinearInterpolate Name="MaterialExpressionLinearInterpolate_35"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionLinearInterpolate Name="MaterialExpressionLinearInterpolate_36"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_24"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_25"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionSine Name="MaterialExpressionSine_6"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureCoordinate Name="MaterialExpressionTextureCoordinate_19"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureCoordinate Name="MaterialExpressionTextureCoordinate_20"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_37"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_38"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_39"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_40"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTime Name="MaterialExpressionTime_6"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVectorParameter Name="MaterialExpressionVectorParameter_24"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVectorParameter Name="MaterialExpressionVectorParameter_25"
+   End Object
+   Begin Object Class=/Script/UnrealEd.SceneThumbnailInfoWithPrimitive Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   Begin Object Name="MaterialExpressionAdd_12"
+      A=(Expression=MaterialExpressionConstant'"M_Tech_Hex_Tile_Pulse:MaterialExpressionConstant_46"')
+      B=(Expression=MaterialExpressionTextureSample'"M_Tech_Hex_Tile_Pulse:MaterialExpressionTextureSample_38"',OutputIndex=2,Mask=1,MaskG=1)
+      MaterialExpressionEditorX=-640
+      MaterialExpressionEditorY=460
+      MaterialExpressionGuid=DF04587C4D01EF8CE30E00AF47E0C70A
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionBumpOffset_6"
+      Coordinate=(Expression=MaterialExpressionTextureCoordinate'"M_Tech_Hex_Tile_Pulse:MaterialExpressionTextureCoordinate_20"')
+      Height=(Expression=MaterialExpressionTextureSample'"M_Tech_Hex_Tile_Pulse:MaterialExpressionTextureSample_40"',OutputIndex=3,Mask=1,MaskB=1)
+      MaterialExpressionEditorX=-2160
+      MaterialExpressionEditorY=240
+      MaterialExpressionGuid=703754A945C7FAC5BB2BD0B10FAC00C9
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionCeil_6"
+      Input=(Expression=MaterialExpressionSine'"M_Tech_Hex_Tile_Pulse:MaterialExpressionSine_6"')
+      MaterialExpressionEditorX=360
+      MaterialExpressionEditorY=1440
+      MaterialExpressionGuid=4FE988C445E6F29A3EDB7482F90B5DBB
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionClamp_8"
+      Input=(Expression=MaterialExpressionAdd'"M_Tech_Hex_Tile_Pulse:MaterialExpressionAdd_12"')
+      MaterialExpressionEditorX=-500
+      MaterialExpressionEditorY=460
+      MaterialExpressionGuid=831D506F49C9333525118F9B5BED7C6E
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionComment_40"
+      SizeX=865
+      SizeY=563
+      Text="BumpOffset"
+      MaterialExpressionEditorX=-2680
+      MaterialExpressionEditorY=140
+      MaterialExpressionGuid=7B5799C2476FAB218C808CAED4F68619
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionComment_41"
+      SizeX=300
+      SizeY=320
+      Text="Ambient occlusion"
+      MaterialExpressionEditorX=-1360
+      MaterialExpressionEditorY=600
+      MaterialExpressionGuid=D7B2C7BB47974564497B6DADA9D92FBE
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionComment_42"
+      SizeX=1140
+      SizeY=560
+      Text="BaseColor"
+      MaterialExpressionEditorX=-1360
+      MaterialExpressionEditorY=-880
+      MaterialExpressionGuid=55F691EC433EABD086B1F2BE4DD7438C
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionComment_43"
+      SizeX=300
+      SizeY=400
+      Text="Normals"
+      MaterialExpressionEditorX=-1360
+      MaterialExpressionEditorY=-100
+      MaterialExpressionGuid=C43ECDF949C88D021F74DAB97FCC521D
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionComment_44"
+      SizeX=1060
+      SizeY=860
+      Text="Emissive"
+      MaterialExpressionEditorX=-400
+      MaterialExpressionEditorY=740
+      MaterialExpressionGuid=6C9D60BB44EF6644FFCFDEBDD831699E
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionComment_49"
+      SizeX=692
+      SizeY=360
+      Text="Mask out emissive from roughness"
+      MaterialExpressionEditorX=-920
+      MaterialExpressionEditorY=300
+      MaterialExpressionGuid=8DD4E6874D0FE5CDAE1A63B041302E36
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionConstant_35"
+      R=0.250000
+      MaterialExpressionEditorX=-560
+      MaterialExpressionEditorY=-580
+      MaterialExpressionGuid=600D85E64DD20D08B75833A347BDE063
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionConstant_36"
+      R=0.250000
+      MaterialExpressionEditorX=-900
+      MaterialExpressionEditorY=-780
+      MaterialExpressionGuid=704140F74A613DA3251D5A9C6A975143
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionConstant_37"
+      R=0.400000
+      MaterialExpressionEditorX=-900
+      MaterialExpressionEditorY=-680
+      MaterialExpressionGuid=169714F6486355B34E9CCEB45297605D
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionConstant_46"
+      R=0.250000
+      MaterialExpressionEditorX=-840
+      MaterialExpressionEditorY=360
+      MaterialExpressionGuid=73D71C4740F753BC5748A9A2A34810EC
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionLinearInterpolate_35"
+      A=(Expression=MaterialExpressionConstant'"M_Tech_Hex_Tile_Pulse:MaterialExpressionConstant_36"')
+      B=(Expression=MaterialExpressionConstant'"M_Tech_Hex_Tile_Pulse:MaterialExpressionConstant_37"')
+      Alpha=(Expression=MaterialExpressionTextureSample'"M_Tech_Hex_Tile_Pulse:MaterialExpressionTextureSample_39"',OutputIndex=1,Mask=1,MaskR=1)
+      MaterialExpressionEditorX=-740
+      MaterialExpressionEditorY=-760
+      MaterialExpressionGuid=80BA921E4474685C020EEF9B8A0EA365
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionLinearInterpolate_36"
+      A=(Expression=MaterialExpressionVectorParameter'"M_Tech_Hex_Tile_Pulse:MaterialExpressionVectorParameter_24"',Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      B=(Expression=MaterialExpressionVectorParameter'"M_Tech_Hex_Tile_Pulse:MaterialExpressionVectorParameter_25"',Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      Alpha=(Expression=MaterialExpressionSine'"M_Tech_Hex_Tile_Pulse:MaterialExpressionSine_6"')
+      MaterialExpressionEditorX=260
+      MaterialExpressionEditorY=1060
+      MaterialExpressionGuid=D1F0689D497A17EC5B42B8896AB6ED50
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_24"
+      A=(Expression=MaterialExpressionLinearInterpolate'"M_Tech_Hex_Tile_Pulse:MaterialExpressionLinearInterpolate_35"')
+      B=(Expression=MaterialExpressionConstant'"M_Tech_Hex_Tile_Pulse:MaterialExpressionConstant_35"')
+      MaterialExpressionEditorX=-400
+      MaterialExpressionEditorY=-660
+      MaterialExpressionGuid=B3AC15F74980BA5D9B7D8EA35A12D3C9
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_25"
+      A=(Expression=MaterialExpressionTextureSample'"M_Tech_Hex_Tile_Pulse:MaterialExpressionTextureSample_38"',OutputIndex=2,Mask=1,MaskG=1)
+      B=(Expression=MaterialExpressionLinearInterpolate'"M_Tech_Hex_Tile_Pulse:MaterialExpressionLinearInterpolate_36"')
+      MaterialExpressionEditorX=440
+      MaterialExpressionEditorY=820
+      MaterialExpressionGuid=DFF535AD4C03E227E717DE8AA55FFF6B
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionSine_6"
+      Input=(Expression=MaterialExpressionTime'"M_Tech_Hex_Tile_Pulse:MaterialExpressionTime_6"')
+      Period=4.000000
+      MaterialExpressionEditorX=-80
+      MaterialExpressionEditorY=1440
+      MaterialExpressionGuid=2BFD910548D550AAA24047AE16CF77F2
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureCoordinate_19"
+      MaterialExpressionEditorX=-1320
+      MaterialExpressionEditorY=-580
+      MaterialExpressionGuid=5AF424C54C4DEA8D13F36F88024E0FFD
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureCoordinate_20"
+      MaterialExpressionEditorX=-2660
+      MaterialExpressionEditorY=220
+      MaterialExpressionGuid=8589164341EF5E824D0BDA8EE896A122
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_37"
+      Coordinates=(Expression=MaterialExpressionBumpOffset'"M_Tech_Hex_Tile_Pulse:MaterialExpressionBumpOffset_6"')
+      Texture=Texture2D'"/Game/StarterContent/Textures/T_Tech_Hex_Tile_N.T_Tech_Hex_Tile_N"'
+      SamplerType=SAMPLERTYPE_Normal
+      MaterialExpressionEditorX=-1300
+      MaterialExpressionGuid=51C04C3A4714DC59540D89969C5B5656
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_38"
+      Coordinates=(Expression=MaterialExpressionBumpOffset'"M_Tech_Hex_Tile_Pulse:MaterialExpressionBumpOffset_6"')
+      Texture=Texture2D'"/Game/StarterContent/Textures/T_Tech_Hex_Tile_M.T_Tech_Hex_Tile_M"'
+      SamplerType=SAMPLERTYPE_LinearColor
+      MaterialExpressionEditorX=-1300
+      MaterialExpressionEditorY=680
+      MaterialExpressionGuid=A5DF27C645C83BA31FD9B387DCE83B44
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_39"
+      Coordinates=(Expression=MaterialExpressionTextureCoordinate'"M_Tech_Hex_Tile_Pulse:MaterialExpressionTextureCoordinate_19"')
+      Texture=Texture2D'"/Game/StarterContent/Textures/T_MacroVariation.T_MacroVariation"'
+      MaterialExpressionEditorX=-1060
+      MaterialExpressionEditorY=-580
+      MaterialExpressionGuid=49148F214F7555BD44A6CCBFF1713303
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_40"
+      Coordinates=(Expression=MaterialExpressionTextureCoordinate'"M_Tech_Hex_Tile_Pulse:MaterialExpressionTextureCoordinate_20"')
+      Texture=Texture2D'"/Game/StarterContent/Textures/T_Tech_Hex_Tile_M.T_Tech_Hex_Tile_M"'
+      SamplerType=SAMPLERTYPE_LinearColor
+      MaterialExpressionEditorX=-2440
+      MaterialExpressionEditorY=440
+      MaterialExpressionGuid=15B77A6F4B1E2555E59F9C8D35E8BB59
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionTime_6"
+      MaterialExpressionEditorX=-240
+      MaterialExpressionEditorY=1440
+      MaterialExpressionGuid=B3659D114D7D476FFE8C47B88B6D464D
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionVectorParameter_24"
+      DefaultValue=(R=0.560000,G=2.958483,B=4.000000,A=1.000000)
+      ParameterName="Emissive color 01"
+      ExpressionGUID=8370AC744FD4C3280CB92886723F8D19
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=920
+      MaterialExpressionGuid=00314B184354E56203DDF0BC4F9E98CC
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="MaterialExpressionVectorParameter_25"
+      DefaultValue=(R=0.471828,G=0.646435,B=4.000000,A=1.000000)
+      ParameterName="Emissive color 02"
+      ExpressionGUID=4A7731AF40C5DE186983198441861B3C
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=1180
+      MaterialExpressionGuid=F7BE407C4482A192D0511A8935AF6D1B
+      Material=Material'"M_Tech_Hex_Tile_Pulse"'
+   End Object
+   Begin Object Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   BaseColor=(Expression=MaterialExpressionMultiply'"MaterialExpressionMultiply_24"')
+   Roughness=(Expression=MaterialExpressionClamp'"MaterialExpressionClamp_8"')
+   Normal=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_37"',Mask=1,MaskR=1,MaskG=1,MaskB=1)
+   EmissiveColor=(Expression=MaterialExpressionMultiply'"MaterialExpressionMultiply_25"')
+   bUsedWithSkeletalMesh=True
+   bUsedWithStaticLighting=True
+   EditorX=736
+   EditorY=208
+   Expressions(0)=MaterialExpressionMultiply'"MaterialExpressionMultiply_24"'
+   Expressions(1)=MaterialExpressionClamp'"MaterialExpressionClamp_8"'
+   Expressions(2)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_37"'
+   Expressions(3)=MaterialExpressionMultiply'"MaterialExpressionMultiply_25"'
+   Expressions(4)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_38"'
+   Expressions(5)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_39"'
+   Expressions(6)=MaterialExpressionTextureCoordinate'"MaterialExpressionTextureCoordinate_19"'
+   Expressions(7)=MaterialExpressionLinearInterpolate'"MaterialExpressionLinearInterpolate_35"'
+   Expressions(8)=MaterialExpressionTextureCoordinate'"MaterialExpressionTextureCoordinate_20"'
+   Expressions(9)=MaterialExpressionConstant'"MaterialExpressionConstant_35"'
+   Expressions(10)=MaterialExpressionBumpOffset'"MaterialExpressionBumpOffset_6"'
+   Expressions(11)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_40"'
+   Expressions(12)=MaterialExpressionConstant'"MaterialExpressionConstant_36"'
+   Expressions(13)=MaterialExpressionConstant'"MaterialExpressionConstant_37"'
+   Expressions(14)=MaterialExpressionTime'"MaterialExpressionTime_6"'
+   Expressions(15)=MaterialExpressionSine'"MaterialExpressionSine_6"'
+   Expressions(16)=MaterialExpressionCeil'"MaterialExpressionCeil_6"'
+   Expressions(17)=MaterialExpressionLinearInterpolate'"MaterialExpressionLinearInterpolate_36"'
+   Expressions(18)=MaterialExpressionVectorParameter'"MaterialExpressionVectorParameter_24"'
+   Expressions(19)=MaterialExpressionVectorParameter'"MaterialExpressionVectorParameter_25"'
+   Expressions(20)=MaterialExpressionConstant'"MaterialExpressionConstant_46"'
+   Expressions(21)=MaterialExpressionAdd'"MaterialExpressionAdd_12"'
+   EditorComments(0)=MaterialExpressionComment'"MaterialExpressionComment_40"'
+   EditorComments(1)=MaterialExpressionComment'"MaterialExpressionComment_41"'
+   EditorComments(2)=MaterialExpressionComment'"MaterialExpressionComment_42"'
+   EditorComments(3)=MaterialExpressionComment'"MaterialExpressionComment_43"'
+   EditorComments(4)=MaterialExpressionComment'"MaterialExpressionComment_44"'
+   EditorComments(5)=MaterialExpressionComment'"MaterialExpressionComment_49"'
+   ParameterGroupData(0)=(GroupName="None")
+   ParameterGroupData(1)=(GroupName="None")
+   bCanMaskedBeAssumedOpaque=True
+   StateId=AD29A53B4C0792EDB7C6D5B1AF3BFEDD
+   CachedExpressionData=(Parameters=(RuntimeEntries[1]=(NameHashes=(12877818705898645833,15322937074271555882),ParameterInfos=((Name="Emissive color 01"),(Name="Emissive color 02")),ExpressionGuids=(8370AC744FD4C3280CB92886723F8D19,4A7731AF40C5DE186983198441861B3C),Overrides=(False,False)),VectorValues=((R=0.560000,G=2.958483,B=4.000000,A=1.000000),(R=0.471828,G=0.646435,B=4.000000,A=1.000000)),VectorChannelNameValues=((),()),VectorUsedAsChannelMaskValues=(False,False)),ReferencedTextures=(Texture2D'"/Game/StarterContent/Textures/T_Tech_Hex_Tile_N.T_Tech_Hex_Tile_N"',Texture2D'"/Game/StarterContent/Textures/T_Tech_Hex_Tile_M.T_Tech_Hex_Tile_M"',Texture2D'"/Game/StarterContent/Textures/T_MacroVariation.T_MacroVariation"'),QualityLevelsUsed=(False,False,False,False))
+   ReferencedTextureGuids(0)=0A17556B4A7AD2CEA77696A59AB2DCFE
+   ReferencedTextureGuids(1)=F93262064295CC0E9B3CF9A2DB4CDECF
+   ReferencedTextureGuids(2)=0C068365468906DC61E61398C2297CBA
+   TextureStreamingDataVersion=1
+   TextureStreamingData(0)=(SamplingScale=1.000000,UVChannelIndex=0,TextureName="T_MacroVariation",TextureReference=/Game/StarterContent/Textures/T_MacroVariation.T_MacroVariation)
+   TextureStreamingData(1)=(SamplingScale=0.935913,UVChannelIndex=0,TextureName="T_Tech_Hex_Tile_M",TextureReference=/Game/StarterContent/Textures/T_Tech_Hex_Tile_M.T_Tech_Hex_Tile_M)
+   TextureStreamingData(2)=(SamplingScale=0.939758,UVChannelIndex=0,TextureName="T_Tech_Hex_Tile_N",TextureReference=/Game/StarterContent/Textures/T_Tech_Hex_Tile_N.T_Tech_Hex_Tile_N)
+   ThumbnailInfo=SceneThumbnailInfoWithPrimitive'"SceneThumbnailInfoWithPrimitive_0"'
+   ParameterOverviewExpansion=(("-12Global", True))
+   LightingGuid=EC44F8934143D90BEEC579A7F7D2DDCE
+End Object

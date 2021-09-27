@@ -3,6 +3,10 @@
 
 #include "DB_Platform.h"
 #include "Net/UnrealNetwork.h"
+#include "DestructibleComponent.h"
+#include "DB_Ball.h"
+#include "DB_Player.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
 
 // Sets default values
@@ -19,47 +23,46 @@ ADB_Platform::ADB_Platform()
         DestructMeshComp = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DestructMesh"));
         DestructMeshComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
     }
-
+    static ConstructorHelpers::FObjectFinder<UMaterialInterface> HexWhiteMatInstance(TEXT("MaterialInstanceConstant'/Game/Assets/M_Tech_Hex_Tile_Pulse_White.M_Tech_Hex_Tile_Pulse_White'"));
+    if (HexWhiteMatInstance.Succeeded())
+    {
+        WhiteMat = HexWhiteMatInstance.Object;
+    }
+    static ConstructorHelpers::FObjectFinder<UMaterialInterface> HexBlueMatInstance(TEXT("MaterialInstanceConstant'/Game/Assets/M_Tech_Hex_Tile_Pulse_Blue.M_Tech_Hex_Tile_Pulse_Blue'"));
+    if (HexBlueMatInstance.Succeeded())
+    {
+        BlueMat = HexBlueMatInstance.Object;
+    }
+    static ConstructorHelpers::FObjectFinder<UMaterialInterface> HexRedMatInstance(TEXT("MaterialInstanceConstant'/Game/Assets/M_Tech_Hex_Tile_Pulse_Red.M_Tech_Hex_Tile_Pulse_Red'"));
+    if (HexRedMatInstance.Succeeded())
+    {
+        RedMat = HexRedMatInstance.Object;
+    }
 }
 
 // Called when the game starts or when spawned
 void ADB_Platform::BeginPlay()
 {
 	Super::BeginPlay();
-	if (LastHitTeam != 0) hasBeenHit = true;
+    DestructMeshComp->OnComponentHit.AddDynamic(this, &ADB_Platform::OnCompHit);
 }
 
-void ADB_Platform::OnRep_LastHitTeam()
+void ADB_Platform::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-    onUpdateLastHit();
-}
-
-void ADB_Platform::onUpdateLastHit()
-{
-    //Client-specific functionality
-    //if (IsLocallyControlled())
-    //{
-    //    FString healthMessage = FString::Printf(TEXT("You now have %f health remaining."), CurrentHealth);
-    //    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, healthMessage);
-
-    //    if (CurrentHealth <= 0)
-    //    {
-    //        FString deathMessage = FString::Printf(TEXT("You have been killed."));
-    //        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, deathMessage);
-    //    }
-    //}
-
-    ////Server-specific functionality
-    //if (GetLocalRole() == ROLE_Authority)
-    //{
-    //    FString healthMessage = FString::Printf(TEXT("%s now has %f health remaining."), *GetFName().ToString(), CurrentHealth);
-    //    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, healthMessage);
-    //}
-
-    //Functions that occur on all machines. 
-    /*
-        Any special functionality that should occur as a result of damage or death should be placed here.
-    */
+    ADB_Ball* hitBall = Cast<ADB_Ball>(OtherActor);
+    if (hitBall)
+    {
+        if (hitBall->GetTeam() == LastHitTeam)
+        {
+            UGameplayStatics::ApplyPointDamage(this, 1.0f, NormalImpulse, Hit, GetInstigatorController(), OtherActor, UDamageType::StaticClass());
+            SetLifeSpan(5.0f);
+            //Destroy();
+        }
+        else
+        {
+            UpdateTeam(hitBall->GetTeam());
+        }
+    }
 }
 
 // Called every frame
@@ -67,5 +70,26 @@ void ADB_Platform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ADB_Platform::UpdateTeam(TEnumAsByte<Team> newT)
+{
+    LastHitTeam = newT;    
+    if (LastHitTeam == Team::None)
+    {
+        // set material to white
+        if(WhiteMat) DestructMeshComp->SetMaterial(0, WhiteMat);
+        return;
+    }
+    // get local player controller/character
+    ADB_Player* localPlayer = Cast<ADB_Player>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+    if (LastHitTeam == localPlayer->GetTeam())
+    {
+        if (BlueMat) DestructMeshComp->SetMaterial(0, BlueMat);
+    }
+    else
+    {
+        if (RedMat) DestructMeshComp->SetMaterial(0, RedMat);
+    }
 }
 

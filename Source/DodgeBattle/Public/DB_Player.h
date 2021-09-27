@@ -28,6 +28,11 @@ public:
 	// Returns FollowCamera
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	UPROPERTY(VisibleAnywhere, Category = Mesh)
+	class UDestructibleComponent* DestructMeshComp;
+
+	TEnumAsByte<Team> GetTeam();
+
 protected:
 	/* FUNCTIONS */
 	// Called when the game starts or when spawned

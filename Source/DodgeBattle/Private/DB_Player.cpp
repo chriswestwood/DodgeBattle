@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "DestructibleComponent.h"
 #include "DB_PlayerHUD.h"
 
 // include draw debug helpers header file
@@ -56,9 +57,20 @@ ADB_Player::ADB_Player()
 	ThrowPoint->SetupAttachment(RootComponent);
 	ThrowPoint->SetRelativeLocation(FVector(10, 60, 60));
 	
+	if (!DestructMeshComp)
+	{
+		DestructMeshComp = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DestructMesh"));
+		DestructMeshComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	}
+
 	DodgeCooldown = 5;
 	DodgeCooldownTimer = 0;
 	moveSpeed = 1.0f;
+}
+
+TEnumAsByte<Team> ADB_Player::GetTeam()
+{
+	return team;
 }
 
 // Called when the game starts or when spawned

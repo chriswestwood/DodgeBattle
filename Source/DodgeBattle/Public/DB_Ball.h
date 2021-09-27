@@ -25,6 +25,7 @@ public:
 	void InitVelocity(const FVector velDirection);
 	void InitMomentum(const FVector momentumDirection);
 	void UpdateVelocity(float DeltaTime);
+	TEnumAsByte<Team> GetTeam();
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
 		UStaticMeshComponent* ballMeshComp;
@@ -38,6 +39,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	FVector momentum;
 
