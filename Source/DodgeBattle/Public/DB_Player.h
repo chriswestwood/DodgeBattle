@@ -53,6 +53,12 @@ protected:
 	void MoveForward(float Value);
 	/** Called for side to side input */
 	void MoveRight(float Value);
+	//
+	UFUNCTION()
+	void OnPlayerHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	//
+	UFUNCTION()
+	void PlayerDestruct(AActor* killActor, const FHitResult& Hit);
 
 	/**
 	 * Called via input to turn at a given rate.

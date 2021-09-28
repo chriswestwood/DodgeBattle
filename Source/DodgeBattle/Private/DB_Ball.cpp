@@ -2,7 +2,9 @@
 
 
 #include "DB_Ball.h"
-
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
+#include "DB_Player.h"
 
 // Sets default values
 ADB_Ball::ADB_Ball()
@@ -39,7 +41,12 @@ ADB_Ball::ADB_Ball()
 	{
 		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSceneComponent"));
 	}
-
+	// SOUNDS
+	static ConstructorHelpers::FObjectFinder<USoundCue> hitCue(TEXT("SoundCue'/Game/Assets/DB_BallHitSoundCue.DB_BallHitSoundCue'"));
+	if (hitCue.Succeeded()) hitAudioCue = hitCue.Object;
+	hitAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("HitAudioComp"));
+	hitAudioComponent->bAutoActivate = false;
+	hitAudioComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts or when spawned
@@ -47,11 +54,20 @@ void ADB_Ball::BeginPlay()
 {
 	Super::BeginPlay();
 	ballCollisionComp->OnComponentHit.AddDynamic(this, &ADB_Ball::OnCompHit);
+	if (hitAudioCue->IsValidLowLevelFast()) {
+		hitAudioComponent->SetSound(hitAudioCue);
+	}
 }
 
 void ADB_Ball::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-
+	ADB_Player* hitPlayer = Cast<ADB_Player>(OtherActor);
+	if (hitPlayer)
+	{
+		Destroy();
+		return;
+	}
+	hitAudioComponent->Play();
 }
 
 // Called every frame

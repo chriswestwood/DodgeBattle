@@ -40,7 +40,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
 	void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
 
 	FVector momentum;
 
@@ -50,4 +52,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	TEnumAsByte<BallType> ballType;
 
+	UPROPERTY()
+		class USoundCue* hitAudioCue;
+	UPROPERTY()
+		class UAudioComponent* hitAudioComponent;
 };

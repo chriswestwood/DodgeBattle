@@ -9,6 +9,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "DestructibleComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "DB_PlayerHUD.h"
 
 // include draw debug helpers header file
@@ -68,17 +69,18 @@ ADB_Player::ADB_Player()
 	moveSpeed = 1.0f;
 }
 
+void ADB_Player::BeginPlay()
+{
+	Super::BeginPlay();
+	HUD = Cast<ADB_PlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ADB_Player::OnPlayerHit);
+}
+
 TEnumAsByte<Team> ADB_Player::GetTeam()
 {
 	return team;
 }
 
-// Called when the game starts or when spawned
-void ADB_Player::BeginPlay()
-{
-	Super::BeginPlay();
-	HUD = Cast<ADB_PlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
-}
 
 void ADB_Player::Dodge()
 {
@@ -143,6 +145,32 @@ void ADB_Player::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value * moveSpeed);
 	}
+}
+
+void ADB_Player::OnPlayerHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	ADB_Ball* hitBall = Cast<ADB_Ball>(OtherActor);
+	if (hitBall)
+	{
+		if (hitBall->GetTeam() == team)
+		{			
+			//Destroy();
+		}
+		else
+		{
+			PlayerDestruct(OtherActor,Hit);
+		}
+	}
+}
+
+void ADB_Player::PlayerDestruct(AActor* killActor, const FHitResult& Hit)
+{
+	DestructMeshComp->SetSimulatePhysics(true);
+	DestructMeshComp->SetHiddenInGame(false);
+	DestructMeshComp->ApplyRadiusDamage(1.0f, Hit.ImpactPoint,100.0f,500.0f,false);
+	GetMesh()->SetHiddenInGame(true);
+	DisableInput(Cast<APlayerController>(GetController()));
+	SetLifeSpan(5.0f);
 }
 
 void ADB_Player::TurnAtRate(float Rate)

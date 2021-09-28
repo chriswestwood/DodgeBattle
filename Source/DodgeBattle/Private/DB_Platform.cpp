@@ -23,6 +23,7 @@ ADB_Platform::ADB_Platform()
         DestructMeshComp = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DestructMesh"));
         DestructMeshComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
     }
+    // MATERIALS
     static ConstructorHelpers::FObjectFinder<UMaterialInterface> HexWhiteMatInstance(TEXT("MaterialInstanceConstant'/Game/Assets/M_Tech_Hex_Tile_Pulse_White.M_Tech_Hex_Tile_Pulse_White'"));
     if (HexWhiteMatInstance.Succeeded())
     {
@@ -54,6 +55,8 @@ void ADB_Platform::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
     {
         if (hitBall->GetTeam() == LastHitTeam)
         {
+           
+            DestructMeshComp->SetSimulatePhysics(true);
             UGameplayStatics::ApplyPointDamage(this, 1.0f, NormalImpulse, Hit, GetInstigatorController(), OtherActor, UDamageType::StaticClass());
             SetLifeSpan(5.0f);
             //Destroy();
@@ -83,7 +86,7 @@ void ADB_Platform::UpdateTeam(TEnumAsByte<Team> newT)
     }
     // get local player controller/character
     ADB_Player* localPlayer = Cast<ADB_Player>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-    if (LastHitTeam == localPlayer->GetTeam())
+    if (localPlayer && LastHitTeam == localPlayer->GetTeam())
     {
         if (BlueMat) DestructMeshComp->SetMaterial(0, BlueMat);
     }

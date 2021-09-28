@@ -39,4 +39,5 @@ protected:
 	UMaterialInterface* BlueMat;
 	UPROPERTY()
 	UMaterialInterface* RedMat;
+
 };
