@@ -1,37 +1,25 @@
-## Welcome to GitHub Pages
+![Title](/Title.jpg)
 
-You can use the [editor on GitHub](https://github.com/chriswestwood/DodgeBattle/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+"Dodge Battle" is a take on Disney "Tron" - Disc Wars. 
+ 
+ The objective is to either hit the opponent with your throwable, or have them fall off the stage. Each time a projectile bounces on a platform it will change colour dependant on which team hit last, if it is hit by the same team again (without another team hitting it before them) the platform will be destroyed. Players will have to keep vigilant of which platforms are still standing. 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Features
+- Platform destruction
 
-### Markdown
+![Platform](/platformDestruct.gif)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+- Bouncing and homing projectiles
+- 
+![Platform](/bounce.gif)
 
-```markdown
-Syntax highlighted code block
+### TODO
+- Replication
+- Main Menu
+- Game Mode
 
-# Header 1
-## Header 2
-### Header 3
+## Reference
+- [Disc Wars](https://tron.fandom.com/wiki/Disc_Wars)
 
-- Bulleted
-- List
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/chriswestwood/DodgeBattle/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+<< [Return](https://chriswestwood.github.io/)
