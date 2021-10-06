@@ -10,6 +10,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "DestructibleComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "DB_Ball.h"
+#include "DB_Platform.h"
 #include "DB_PlayerHUD.h"
 
 // include draw debug helpers header file
@@ -53,7 +55,21 @@ ADB_Player::ADB_Player()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Add the Throw Point - so we can defien where to spawn the ball from
+	// Create a camera boom (pulls in towards the player if there is a collision)
+
+	DeathCameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("DeathCameraBoom"));
+	DeathCameraBoom->SetupAttachment(RootComponent);
+	DeathCameraBoom->AddLocalOffset(FVector(0, 0, 75.0f), false);
+	DeathCameraBoom->SocketOffset = FVector(700, 0, 300);
+	DeathCameraBoom->TargetArmLength = 500.0f; // The camera follows at this distance behind the character	
+	DeathCameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+
+	// Create a follow camera
+	DeathCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("DeathCamera"));
+	DeathCamera->SetupAttachment(DeathCameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	DeathCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	// Add the Throw Point - so we can define where to spawn the ball from
 	ThrowPoint = CreateDefaultSubobject<USceneComponent>(TEXT("ThrowPoint"));
 	ThrowPoint->SetupAttachment(RootComponent);
 	ThrowPoint->SetRelativeLocation(FVector(10, 60, 60));
@@ -64,9 +80,23 @@ ADB_Player::ADB_Player()
 		DestructMeshComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 
+	// MATERIALS
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> HexBlueMatInstance(TEXT("MaterialInstanceConstant'/Game/Assets/Materials/M_Tech_Hex_Tile_Blue.M_Tech_Hex_Tile_Blue'"));
+	if (HexBlueMatInstance.Succeeded())
+	{
+		BlueMat = HexBlueMatInstance.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> HexRedMatInstance(TEXT("MaterialInstanceConstant'/Game/Assets/Materials/M_Tech_Hex_Tile_Red.M_Tech_Hex_Tile_Red'"));
+	if (HexRedMatInstance.Succeeded())
+	{
+		RedMat = HexRedMatInstance.Object;
+	}
+
+	// Vars
 	DodgeCooldown = 5;
 	DodgeCooldownTimer = 0;
 	moveSpeed = 1.0f;
+	dodgeSpeed = 4000.0f;
 }
 
 void ADB_Player::BeginPlay()
@@ -74,6 +104,20 @@ void ADB_Player::BeginPlay()
 	Super::BeginPlay();
 	HUD = Cast<ADB_PlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ADB_Player::OnPlayerHit);
+
+	// loop each platform/player and update textures to match team.
+	TArray<AActor*> platArray;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADB_Platform::StaticClass(), platArray);
+	for (AActor* A : platArray)
+	{
+		Cast<ADB_Platform>(A)->UpdateTeam();
+	}
+	TArray<AActor*> pawnArray;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADB_Player::StaticClass(), pawnArray);
+	for (AActor* A : pawnArray)
+	{
+		Cast<ADB_Player>(A)->UpdateTeam();
+	}
 }
 
 TEnumAsByte<Team> ADB_Player::GetTeam()
@@ -81,36 +125,64 @@ TEnumAsByte<Team> ADB_Player::GetTeam()
 	return team;
 }
 
+void ADB_Player::RemoveCurrentBall()
+{
+	currentBall = nullptr;
+}
+
+void ADB_Player::UpdateTeam(TEnumAsByte<Team> newT)
+{
+	if (newT != None) team = newT;
+	if (team == Team::None)
+	{
+		return;
+	}
+	// get local player controller/character
+	ADB_Player* localPlayer = Cast<ADB_Player>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (localPlayer && team == localPlayer->GetTeam())
+	{
+		if (BlueMat) GetMesh()->SetMaterial(0, BlueMat);
+	}
+	else
+	{
+		if (RedMat) GetMesh()->SetMaterial(0, RedMat);
+	}
+}
+
 
 void ADB_Player::Dodge()
 {
-	if (DodgeCooldownTimer <= 0)
+	if (DodgeCooldownTimer <= 0 && !GetCharacterMovement()->IsFalling())
 	{
 		DodgeCooldownTimer = DodgeCooldown;
+		const FVector Direction = GetVelocity().GetSafeNormal() * dodgeSpeed * moveSpeed;
+		GetCharacterMovement()->AddImpulse(Direction, true);
 	}
 }
 
 void ADB_Player::ThrowCharge()
 {
+	if (currentBall) return;
 	moveSpeed = 0.2f;
+	FollowCamera->FieldOfView = 70.0f;
 }
 
 void ADB_Player::Throw()
 {
+	FollowCamera->FieldOfView = 90.0f;
 	moveSpeed = 1.0f;
+	if (currentBall) return;
 	FVector ballLocation = ThrowPoint->GetComponentLocation();
 	FVector throwDirection = throwEndPoint - ballLocation;
 	throwDirection.Normalize();
 	FRotator throwRotation = throwDirection.Rotation();
 	ADB_Ball* newBall = GetWorld()->SpawnActor<ADB_Ball>(ballBlueprint, ballLocation, throwRotation);
+	newBall->SetTeam(GetTeam());
 	newBall->SetOwner(this);
+	currentBall = newBall;
 }
 
 void ADB_Player::Block()
-{
-}
-
-void ADB_Player::Recall()
 {
 }
 
@@ -152,25 +224,23 @@ void ADB_Player::OnPlayerHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 	ADB_Ball* hitBall = Cast<ADB_Ball>(OtherActor);
 	if (hitBall)
 	{
-		if (hitBall->GetTeam() == team)
-		{			
-			//Destroy();
-		}
-		else
-		{
-			PlayerDestruct(OtherActor,Hit);
-		}
+		if (hitBall->GetTeam() != team) PlayerDestruct(OtherActor,Hit);
 	}
 }
 
 void ADB_Player::PlayerDestruct(AActor* killActor, const FHitResult& Hit)
 {
+	FollowCamera->SetActive(false);
+	DeathCamera->SetActive(true);
+	DestructMeshComp->SetMaterial(0, GetMesh()->GetMaterial(0));
+	GetMesh()->SetHiddenInGame(true);
+	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Destructible);
 	DestructMeshComp->SetSimulatePhysics(true);
 	DestructMeshComp->SetHiddenInGame(false);
-	DestructMeshComp->ApplyRadiusDamage(1.0f, Hit.ImpactPoint,100.0f,500.0f,false);
-	GetMesh()->SetHiddenInGame(true);
+	//UGameplayStatics::ApplyPointDamage(this, 1.0f, Hit.ImpactNormal, Hit, GetInstigatorController(), killActor, UDamageType::StaticClass());
+	DestructMeshComp->ApplyRadiusDamage(10.0f, Hit.ImpactPoint, 50.0f, 100.0f, true);
 	DisableInput(Cast<APlayerController>(GetController()));
-	SetLifeSpan(5.0f);
+	SetLifeSpan(4.0f);
 }
 
 void ADB_Player::TurnAtRate(float Rate)
@@ -224,6 +294,14 @@ void ADB_Player::Tick(float DeltaTime)
 	const APlayerController* const PlayerController = Cast<const APlayerController>(GetController());
 	PlayerController->ProjectWorldLocationToScreen(throwEndPoint, ScreenLocation);
 	if (HUD)HUD->UpdateCrosshair(ScreenLocation,ScreenLocation,1.0f);
+}
+
+void ADB_Player::FellOutOfWorld(const UDamageType& dmgType)
+{
+	FHitResult Hit = FHitResult();
+	Hit.ImpactNormal = GetActorUpVector();
+	Hit.ImpactPoint = GetRootComponent()->GetComponentLocation();
+	PlayerDestruct(this, Hit);
 }
 
 // Called to bind functionality to input

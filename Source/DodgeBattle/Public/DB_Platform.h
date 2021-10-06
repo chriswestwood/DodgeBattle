@@ -17,9 +17,9 @@ public:
 	ADB_Platform();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	void UpdateTeam(TEnumAsByte<Team> newT);
-
+	// Change team, and update the Material to show the correct colour
+	void UpdateTeam(TEnumAsByte<Team> newT = None);
+	//
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	class UDestructibleComponent* DestructMeshComp;
 
@@ -29,15 +29,25 @@ protected:
 
 	UFUNCTION()
 	void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	//
+	UFUNCTION()
+	void PlatformDestruct(AActor* killActor, const FHitResult& Hit);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Team)
 	TEnumAsByte<Team> LastHitTeam;
 
 	UPROPERTY()
-	UMaterialInterface* WhiteMat;
-	UPROPERTY()
 	UMaterialInterface* BlueMat;
+
 	UPROPERTY()
 	UMaterialInterface* RedMat;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "VFX")
+	UParticleSystem* HitEmitter;
+
+	UPROPERTY()
+		class USoundCue* hitAudioCue;
+	UPROPERTY()
+		class UAudioComponent* hitAudioComponent;
 
 };

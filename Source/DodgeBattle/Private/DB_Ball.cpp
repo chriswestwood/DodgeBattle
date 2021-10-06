@@ -2,9 +2,8 @@
 
 
 #include "DB_Ball.h"
-#include "Sound/SoundCue.h"
-#include "Components/AudioComponent.h"
 #include "DB_Player.h"
+#include "DB_Platform.h"
 
 // Sets default values
 ADB_Ball::ADB_Ball()
@@ -34,19 +33,20 @@ ADB_Ball::ADB_Ball()
 		ProjectileMovementComponent->MaxSpeed = 3000.0f;
 		ProjectileMovementComponent->bRotationFollowsVelocity = true;
 		ProjectileMovementComponent->bShouldBounce = true;
-		ProjectileMovementComponent->Bounciness = 1.0f;
+		ProjectileMovementComponent->Bounciness = 0.9f;
 		ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
 	}
 	if (!RootComponent)
 	{
 		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSceneComponent"));
 	}
-	// SOUNDS
-	static ConstructorHelpers::FObjectFinder<USoundCue> hitCue(TEXT("SoundCue'/Game/Assets/DB_BallHitSoundCue.DB_BallHitSoundCue'"));
-	if (hitCue.Succeeded()) hitAudioCue = hitCue.Object;
-	hitAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("HitAudioComp"));
-	hitAudioComponent->bAutoActivate = false;
-	hitAudioComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
+	// Set Where the ball will "home" in on
+	HomingPoint = CreateDefaultSubobject<USceneComponent>(TEXT("HomingPoint"));
+	HomingPoint->SetupAttachment(RootComponent);
+
+	hitReturnCount = 2;
+	returnTimer = 2;
 }
 
 // Called when the game starts or when spawned
@@ -54,27 +54,44 @@ void ADB_Ball::BeginPlay()
 {
 	Super::BeginPlay();
 	ballCollisionComp->OnComponentHit.AddDynamic(this, &ADB_Ball::OnCompHit);
-	if (hitAudioCue->IsValidLowLevelFast()) {
-		hitAudioComponent->SetSound(hitAudioCue);
-	}
+	
 }
 
 void ADB_Ball::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	ADB_Player* hitPlayer = Cast<ADB_Player>(OtherActor);
-	if (hitPlayer)
+	hitCount++;
+	ADB_Platform* hitPlatform = Cast<ADB_Platform>(OtherActor);
+	if (hitPlatform)
 	{
-		Destroy();
+		if (hitCount >= hitReturnCount && !bReturnToPlayer)SetReturnToPlayer();
 		return;
 	}
-	hitAudioComponent->Play();
+	// hit anything else destroy
+	Destroy();
 }
 
 // Called every frame
 void ADB_Ball::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (!bReturnToPlayer)
+	{
+		returnTimer -= DeltaTime;
+		if (returnTimer < 0)
+		{
+			SetReturnToPlayer();
+		}
+	}
+}
 
+void ADB_Ball::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	ADB_Player* PlayerOwner = Cast<ADB_Player>(GetOwner());
+	if (PlayerOwner)
+	{
+		PlayerOwner->RemoveCurrentBall();
+	}
 }
 
 void ADB_Ball::InitVelocity(const FVector velDirection)
@@ -95,5 +112,19 @@ void ADB_Ball::UpdateVelocity(float DeltaTime)
 TEnumAsByte<Team> ADB_Ball::GetTeam()
 {
 	return team;
+}
+
+void ADB_Ball::SetTeam(TEnumAsByte<Team> t)
+{
+	team = t;
+}
+
+void ADB_Ball::SetReturnToPlayer()
+{
+	bReturnToPlayer = true;
+	ProjectileMovementComponent->bIsHomingProjectile = true;
+	ProjectileMovementComponent->HomingTargetComponent = GetOwner()->GetRootComponent();
+	ProjectileMovementComponent->HomingAccelerationMagnitude = 20000;
+
 }
 

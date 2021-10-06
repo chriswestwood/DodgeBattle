@@ -26,4 +26,7 @@ ADB_GameMode::ADB_GameMode()
 	GameStateClass = ADB_GameState::StaticClass();
 	PlayerStateClass = ADB_PlayerState::StaticClass();
 	SpectatorClass = ADB_SpectatorPawn::StaticClass();
+
+	bStartPlayersAsSpectators = true;
+	bDelayedStart = true;
 }

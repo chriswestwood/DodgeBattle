@@ -7,6 +7,10 @@
 #include "DB_Ball.h"
 #include "DB_Player.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Particles/ParticleSystem.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "Engine/Engine.h"
 
 // Sets default values
@@ -24,11 +28,6 @@ ADB_Platform::ADB_Platform()
         DestructMeshComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
     }
     // MATERIALS
-    static ConstructorHelpers::FObjectFinder<UMaterialInterface> HexWhiteMatInstance(TEXT("MaterialInstanceConstant'/Game/Assets/M_Tech_Hex_Tile_Pulse_White.M_Tech_Hex_Tile_Pulse_White'"));
-    if (HexWhiteMatInstance.Succeeded())
-    {
-        WhiteMat = HexWhiteMatInstance.Object;
-    }
     static ConstructorHelpers::FObjectFinder<UMaterialInterface> HexBlueMatInstance(TEXT("MaterialInstanceConstant'/Game/Assets/M_Tech_Hex_Tile_Pulse_Blue.M_Tech_Hex_Tile_Pulse_Blue'"));
     if (HexBlueMatInstance.Succeeded())
     {
@@ -39,6 +38,12 @@ ADB_Platform::ADB_Platform()
     {
         RedMat = HexRedMatInstance.Object;
     }
+    // SOUNDS
+    static ConstructorHelpers::FObjectFinder<USoundCue> hitCue(TEXT("SoundCue'/Game/Assets/DB_BallHitSoundCue.DB_BallHitSoundCue'"));
+    if (hitCue.Succeeded()) hitAudioCue = hitCue.Object;
+    hitAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("HitAudioComp"));
+    hitAudioComponent->bAutoActivate = false;
+    hitAudioComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts or when spawned
@@ -46,6 +51,9 @@ void ADB_Platform::BeginPlay()
 {
 	Super::BeginPlay();
     DestructMeshComp->OnComponentHit.AddDynamic(this, &ADB_Platform::OnCompHit);
+    if (hitAudioCue->IsValidLowLevelFast()) {
+        hitAudioComponent->SetSound(hitAudioCue);
+    }
 }
 
 void ADB_Platform::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -53,21 +61,30 @@ void ADB_Platform::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
     ADB_Ball* hitBall = Cast<ADB_Ball>(OtherActor);
     if (hitBall)
     {
+        hitAudioComponent->Play();
+        if (HitEmitter)
+        {
+            FTransform transform = FTransform(UKismetMathLibrary::MakeRotationFromAxes(Hit.ImpactNormal, FVector(0, 0, 0), FVector(0, 0, 0)));
+            transform.SetLocation(Hit.ImpactPoint);
+            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEmitter, transform, true, EPSCPoolMethod::None, true);
+        }
         if (hitBall->GetTeam() == LastHitTeam)
         {
-           
-            DestructMeshComp->SetSimulatePhysics(true);
-            UGameplayStatics::ApplyPointDamage(this, 1.0f, NormalImpulse, Hit, GetInstigatorController(), OtherActor, UDamageType::StaticClass());
-            SetLifeSpan(5.0f);
-            //Destroy();
+            PlatformDestruct(OtherActor, Hit);            
         }
         else
-        {
+        {                
             UpdateTeam(hitBall->GetTeam());
         }
     }
 }
 
+void ADB_Platform::PlatformDestruct(AActor* killActor, const FHitResult& Hit)
+{
+    DestructMeshComp->SetSimulatePhysics(true);
+    UGameplayStatics::ApplyPointDamage(this, 1.0f, Hit.ImpactNormal, Hit, GetInstigatorController(), killActor, UDamageType::StaticClass());
+    SetLifeSpan(5.0f);
+}
 // Called every frame
 void ADB_Platform::Tick(float DeltaTime)
 {
@@ -77,11 +94,9 @@ void ADB_Platform::Tick(float DeltaTime)
 
 void ADB_Platform::UpdateTeam(TEnumAsByte<Team> newT)
 {
-    LastHitTeam = newT;    
+    if(newT != None) LastHitTeam = newT;    
     if (LastHitTeam == Team::None)
     {
-        // set material to white
-        if(WhiteMat) DestructMeshComp->SetMaterial(0, WhiteMat);
         return;
     }
     // get local player controller/character
