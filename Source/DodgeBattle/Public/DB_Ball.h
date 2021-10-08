@@ -21,6 +21,8 @@ public:
 	ADB_Ball();
 	// Override Tick
 	virtual void Tick(float DeltaTime) override;
+	// Enable Replication
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	// Override EndPlay
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// Initialise the velocity
@@ -30,11 +32,19 @@ public:
 	// sets the velocity
 	UFUNCTION()
 	void UpdateVelocity(float DeltaTime);
+
 	// Returns the balls team
 	TEnumAsByte<Team> GetTeam();
 	// Sets the balls team
 	UFUNCTION()
 	void SetTeam(TEnumAsByte<Team> t);
+	// replicate Team
+	UFUNCTION()
+	void OnRep_Team();
+	// update the Material to show the correct colour
+	void OnTeamUpdate();
+
+
 	// Sets the ball to return to the throwing player
 	UFUNCTION()
 	void SetReturnToPlayer();
@@ -51,33 +61,41 @@ protected:
 
 	// Throw Momentum
 	UPROPERTY()
-		FVector momentum;
-	// Team the Ball belongs to
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Team)
-		TEnumAsByte<Team> team;
+	FVector momentum;
+
+	// Current Team
+	UPROPERTY(ReplicatedUsing = OnRep_Team,EditAnywhere, BlueprintReadWrite, Category = Team)
+	TEnumAsByte<Team> currentTeam;
+	// Blue Material - for ally team
+	UPROPERTY()
+	UMaterialInterface* BlueMat;
+	// Red Material - for enemy team
+	UPROPERTY()
+	UMaterialInterface* RedMat;
+
 	// Ball Type
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
-		TEnumAsByte<BallType> ballType;
+	TEnumAsByte<BallType> ballType;
 	// Ball Mesh Component
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
-		UStaticMeshComponent* ballMeshComp;
+	UStaticMeshComponent* ballMeshComp;
 	// Ball Collision Component
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
-		USphereComponent* ballCollisionComp;
+	USphereComponent* ballCollisionComp;
 	// Ball Movement Component.
 	UPROPERTY(VisibleAnywhere, Category = Movement)
-		UProjectileMovementComponent* ProjectileMovementComponent;
+	UProjectileMovementComponent* ProjectileMovementComponent;
 	// Homing Point
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Player, meta = (AllowPrivateAccess = "true"))
-		class USceneComponent* HomingPoint;
+	class USceneComponent* HomingPoint;
 	// flag to state returning to player
-		bool bReturnToPlayer;
+	bool bReturnToPlayer;
 	// Return Timer - if time passes will auto return to player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
-		float returnTimer;
+	float returnTimer;
 	// amount of times the ball has bounced
-		int hitCount;
+	int hitCount;
 	// number of times the ball bounces before returning to player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
-		int hitReturnCount;
+	int hitReturnCount;
 };

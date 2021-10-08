@@ -13,6 +13,7 @@
 #include "DB_Ball.h"
 #include "DB_Platform.h"
 #include "DB_PlayerHUD.h"
+#include "Net/UnrealNetwork.h"
 
 // include draw debug helpers header file
 #include "DrawDebugHelpers.h"
@@ -21,6 +22,7 @@
 // Sets default values
 ADB_Player::ADB_Player()
 {
+	bReplicates = true;
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -91,55 +93,103 @@ ADB_Player::ADB_Player()
 	{
 		RedMat = HexRedMatInstance.Object;
 	}
-
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ADB_Player::OnPlayerHit);
+	}
 	// Vars
 	DodgeCooldown = 5;
 	DodgeCooldownTimer = 0;
 	moveSpeed = 1.0f;
 	dodgeSpeed = 4000.0f;
+	currentTeam = Team::Team1;
 }
 
 void ADB_Player::BeginPlay()
 {
 	Super::BeginPlay();
 	HUD = Cast<ADB_PlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
-	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ADB_Player::OnPlayerHit);
-
+	
 	// loop each platform/player and update textures to match team.
 	TArray<AActor*> platArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADB_Platform::StaticClass(), platArray);
 	for (AActor* A : platArray)
 	{
-		Cast<ADB_Platform>(A)->UpdateTeam();
+		Cast<ADB_Platform>(A)->OnTeamUpdate();
 	}
 	TArray<AActor*> pawnArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADB_Player::StaticClass(), pawnArray);
 	for (AActor* A : pawnArray)
 	{
-		Cast<ADB_Player>(A)->UpdateTeam();
+		Cast<ADB_Player>(A)->OnTeamUpdate();
 	}
+}
+
+
+// Called every frame
+void ADB_Player::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if (DodgeCooldownTimer > 0)
+	{
+		DodgeCooldownTimer -= DeltaTime;
+		if (DodgeCooldownTimer < 0) DodgeCooldownTimer = 0;
+		if (HUD)HUD->UpdateStamina(DodgeCooldownTimer / DodgeCooldown);
+	}
+
+	// Calculate the vector the character is going to throw to
+	FHitResult OutHit;
+	FVector Start = FollowCamera->GetComponentLocation();
+	FVector ForwardVector = FollowCamera->GetForwardVector();
+	FVector End = ((ForwardVector * 5000.f) + Start);
+	FCollisionQueryParams CollisionParams;
+	if (GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams))
+	{
+		if (OutHit.bBlockingHit)
+		{
+			End = OutHit.ImpactPoint;
+		}
+	}
+	Start = ThrowPoint->GetComponentLocation();
+	throwEndPoint = End;
+	if (GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams))
+	{
+		if (OutHit.bBlockingHit)
+		{
+			throwEndPoint = OutHit.ImpactPoint;
+		}
+	}
+
+	FVector2D ScreenLocation;
+	const APlayerController* const PlayerController = Cast<const APlayerController>(GetController());
+	PlayerController->ProjectWorldLocationToScreen(throwEndPoint, ScreenLocation);
 }
 
 TEnumAsByte<Team> ADB_Player::GetTeam()
 {
-	return team;
+	return currentTeam;
 }
 
-void ADB_Player::RemoveCurrentBall()
+void ADB_Player::SetTeam(TEnumAsByte<Team> newT)
 {
-	currentBall = nullptr;
-}
-
-void ADB_Player::UpdateTeam(TEnumAsByte<Team> newT)
-{
-	if (newT != None) team = newT;
-	if (team == Team::None)
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		return;
+		currentTeam = newT;
+		OnTeamUpdate();
 	}
+}
+
+void ADB_Player::OnRep_Team()
+{
+	OnTeamUpdate();
+}
+
+void ADB_Player::OnTeamUpdate()
+{
+	if (currentTeam == Team::None) return;
 	// get local player controller/character
 	ADB_Player* localPlayer = Cast<ADB_Player>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (localPlayer && team == localPlayer->GetTeam())
+	if (localPlayer && currentTeam == localPlayer->GetTeam())
 	{
 		if (BlueMat) GetMesh()->SetMaterial(0, BlueMat);
 	}
@@ -148,7 +198,6 @@ void ADB_Player::UpdateTeam(TEnumAsByte<Team> newT)
 		if (RedMat) GetMesh()->SetMaterial(0, RedMat);
 	}
 }
-
 
 void ADB_Player::Dodge()
 {
@@ -167,21 +216,32 @@ void ADB_Player::ThrowCharge()
 	FollowCamera->FieldOfView = 70.0f;
 }
 
-void ADB_Player::Throw()
+void ADB_Player::ThrowChargeEnd()
 {
 	FollowCamera->FieldOfView = 90.0f;
 	moveSpeed = 1.0f;
-	if (currentBall) return;
+	if (!currentBall) ThrowBall();
+}
+
+void ADB_Player::ThrowBall_Implementation()
+{
 	FVector ballLocation = ThrowPoint->GetComponentLocation();
 	FVector throwDirection = throwEndPoint - ballLocation;
 	throwDirection.Normalize();
 	FRotator throwRotation = throwDirection.Rotation();
-	ADB_Ball* newBall = GetWorld()->SpawnActor<ADB_Ball>(ballBlueprint, ballLocation, throwRotation);
+	FActorSpawnParameters spawnParameters;
+	spawnParameters.Instigator = GetInstigator();
+	spawnParameters.Owner = this;
+	ADB_Ball* newBall = GetWorld()->SpawnActor<ADB_Ball>(ballBlueprint, ballLocation, throwRotation,spawnParameters);
 	newBall->SetTeam(GetTeam());
-	newBall->SetOwner(this);
+	//newBall->SetOwner(this);
 	currentBall = newBall;
 }
 
+void ADB_Player::RemoveCurrentBall()
+{
+	currentBall = nullptr;
+}
 void ADB_Player::Block()
 {
 }
@@ -224,7 +284,7 @@ void ADB_Player::OnPlayerHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 	ADB_Ball* hitBall = Cast<ADB_Ball>(OtherActor);
 	if (hitBall)
 	{
-		if (hitBall->GetTeam() != team) PlayerDestruct(OtherActor,Hit);
+		if (hitBall->GetTeam() != currentTeam) PlayerDestruct(OtherActor,Hit);
 	}
 }
 
@@ -255,47 +315,6 @@ void ADB_Player::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-
-// Called every frame
-void ADB_Player::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	if (DodgeCooldownTimer > 0)
-	{
-		DodgeCooldownTimer -= DeltaTime;
-		if (DodgeCooldownTimer < 0) DodgeCooldownTimer = 0;
-		if(HUD)HUD->UpdateStamina(DodgeCooldownTimer/DodgeCooldown);
-	}
-
-	// Calculate the vector the character is going to throw to
-	FHitResult OutHit;
-	FVector Start = FollowCamera->GetComponentLocation();
-	FVector ForwardVector = FollowCamera->GetForwardVector();
-	FVector End = ((ForwardVector * 5000.f) + Start);
-	FCollisionQueryParams CollisionParams;	
-	if (GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams))
-	{
-		if (OutHit.bBlockingHit)
-		{
-			End = OutHit.ImpactPoint;
-		}			
-	}
-	Start = ThrowPoint->GetComponentLocation();
-	throwEndPoint = End;
-	if (GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams))
-	{
-		if (OutHit.bBlockingHit)
-		{
-			throwEndPoint = OutHit.ImpactPoint;
-		}
-	}
-	
-	FVector2D ScreenLocation;
-	const APlayerController* const PlayerController = Cast<const APlayerController>(GetController());
-	PlayerController->ProjectWorldLocationToScreen(throwEndPoint, ScreenLocation);
-	if (HUD)HUD->UpdateCrosshair(ScreenLocation,ScreenLocation,1.0f);
-}
-
 void ADB_Player::FellOutOfWorld(const UDamageType& dmgType)
 {
 	FHitResult Hit = FHitResult();
@@ -313,7 +332,7 @@ void ADB_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ADB_Player::Jump);
 	PlayerInputComponent->BindAction("Dodge", IE_Pressed, this, &ADB_Player::Dodge);
 	PlayerInputComponent->BindAction("Throw", IE_Pressed, this, &ADB_Player::ThrowCharge);
-	PlayerInputComponent->BindAction("Throw", IE_Released, this, &ADB_Player::Throw);
+	PlayerInputComponent->BindAction("Throw", IE_Released, this, &ADB_Player::ThrowChargeEnd);
 	PlayerInputComponent->BindAction("Block", IE_Pressed, this, &ADB_Player::Block);
 	PlayerInputComponent->BindAction("Block", IE_Released, this, &ADB_Player::StopBlock);
 	PlayerInputComponent->BindAxis("MoveForward", this, &ADB_Player::MoveForward);
@@ -327,5 +346,11 @@ void ADB_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ADB_Player::LookUpAtRate);
 
+}
+
+void ADB_Player::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ADB_Player, currentTeam);
 }
 

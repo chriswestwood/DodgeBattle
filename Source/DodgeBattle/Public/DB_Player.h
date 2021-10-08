@@ -24,6 +24,8 @@ public:
 	virtual void FellOutOfWorld(const class UDamageType& dmgType) override;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	// Enable Replication
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	// Returns CameraBoom
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	// Returns FollowCamera
@@ -31,12 +33,19 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	class UDestructibleComponent* DestructMeshComp;
-
-	TEnumAsByte<Team> GetTeam();
 	// Remove Current Ball
 	void RemoveCurrentBall();
+
+
 	// Change team, and update the Material to show the correct colour
-	void UpdateTeam(TEnumAsByte<Team> newT = None);
+	void SetTeam(TEnumAsByte<Team> newT = None);
+	// Get Team
+	TEnumAsByte<Team> GetTeam();
+	// Replicated Team
+	UFUNCTION()
+	void OnRep_Team();
+	// update the Material to show the correct colour
+	void OnTeamUpdate();
 
 protected:
 	/* FUNCTIONS */
@@ -44,10 +53,15 @@ protected:
 	virtual void BeginPlay() override;
 	//
 	void Dodge();
-	//
+	// Start Throw
+	UFUNCTION()
 	void ThrowCharge();
-	//
-	void Throw();
+	// Perform Throw
+	UFUNCTION()
+	void ThrowChargeEnd();
+	// Server function to spawn ball
+	UFUNCTION(Server, Reliable)
+	void ThrowBall();
 	//
 	void Block();
 	//
@@ -106,9 +120,9 @@ protected:
 
 		UPROPERTY(EditAnywhere, Category = Inventory)
 		TSubclassOf<class ADB_Ball> ballBlueprint;
-		// Player Team
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Team)
-		TEnumAsByte<Team> team;
+		// Current Team
+		UPROPERTY(ReplicatedUsing = OnRep_Team, EditAnywhere, BlueprintReadWrite, Category = Team)
+		TEnumAsByte<Team> currentTeam;
 		// Current Inventory
 		UPROPERTY()
 		TArray<TEnumAsByte<BallType>> ballInv;

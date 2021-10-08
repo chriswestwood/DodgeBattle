@@ -12,16 +12,31 @@ class DODGEBATTLE_API ADB_Platform : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
-	ADB_Platform();
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	// Change team, and update the Material to show the correct colour
-	void UpdateTeam(TEnumAsByte<Team> newT = None);
-	//
+	// Destruct comp
 	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	class UDestructibleComponent* DestructMeshComp;
+
+public:	
+
+	// FUNCTIONS
+
+	// Sets default values for this actor's properties
+	ADB_Platform();
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Enable Replication
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+	// Change team 
+	void SetTeam(TEnumAsByte<Team> newT = None);
+	// Replicate LastHitTeam
+	UFUNCTION()
+	void OnRep_Team();
+	// update the Material to show the correct colour
+ 	void OnTeamUpdate();
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -33,21 +48,27 @@ protected:
 	UFUNCTION()
 	void PlatformDestruct(AActor* killActor, const FHitResult& Hit);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Team)
-	TEnumAsByte<Team> LastHitTeam;
+	// VARIABLES
 
+	// Team the Ball belongs to
+	UPROPERTY(ReplicatedUsing = OnRep_Team, EditAnywhere, BlueprintReadWrite, Category = Team)
+	TEnumAsByte<Team> currentTeam;
+
+	// Blue Material - for ally team
 	UPROPERTY()
 	UMaterialInterface* BlueMat;
-
+	// Red Material - for enemy team
 	UPROPERTY()
 	UMaterialInterface* RedMat;
 
+	// Particle Effect
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "VFX")
 	UParticleSystem* HitEmitter;
 
+	// Audio on hit
 	UPROPERTY()
-		class USoundCue* hitAudioCue;
+	class USoundCue* hitAudioCue;
 	UPROPERTY()
-		class UAudioComponent* hitAudioComponent;
+	class UAudioComponent* hitAudioComponent;
 
 };

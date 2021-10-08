@@ -4,10 +4,13 @@
 #include "DB_Ball.h"
 #include "DB_Player.h"
 #include "DB_Platform.h"
+#include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ADB_Ball::ADB_Ball()
 {
+	bReplicates = true;
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;	
 	if (!ballCollisionComp)
@@ -40,21 +43,34 @@ ADB_Ball::ADB_Ball()
 	{
 		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSceneComponent"));
 	}
-
+	// MATERIALS
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> HexBlueMatInstance(TEXT("MaterialInstanceConstant'/Game/Assets/Materials/M_Tech_Hex_Tile_Blue.M_Tech_Hex_Tile_Blue'"));
+	if (HexBlueMatInstance.Succeeded())
+	{
+		BlueMat = HexBlueMatInstance.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> HexRedMatInstance(TEXT("MaterialInstanceConstant'/Game/Assets/Materials/M_Tech_Hex_Tile_Red.M_Tech_Hex_Tile_Red'"));
+	if (HexRedMatInstance.Succeeded())
+	{
+		RedMat = HexRedMatInstance.Object;
+	}
 	// Set Where the ball will "home" in on
 	HomingPoint = CreateDefaultSubobject<USceneComponent>(TEXT("HomingPoint"));
 	HomingPoint->SetupAttachment(RootComponent);
 
 	hitReturnCount = 2;
 	returnTimer = 2;
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		ballCollisionComp->OnComponentHit.AddDynamic(this, &ADB_Ball::OnCompHit);
+	}
 }
 
 // Called when the game starts or when spawned
 void ADB_Ball::BeginPlay()
 {
 	Super::BeginPlay();
-	ballCollisionComp->OnComponentHit.AddDynamic(this, &ADB_Ball::OnCompHit);
-	
 }
 
 void ADB_Ball::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -111,12 +127,36 @@ void ADB_Ball::UpdateVelocity(float DeltaTime)
 
 TEnumAsByte<Team> ADB_Ball::GetTeam()
 {
-	return team;
+	return currentTeam;
 }
 
 void ADB_Ball::SetTeam(TEnumAsByte<Team> t)
 {
-	team = t;
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		currentTeam = t;
+		OnTeamUpdate();
+	}
+}
+
+void ADB_Ball::OnRep_Team()
+{
+	OnTeamUpdate();
+}
+
+void ADB_Ball::OnTeamUpdate()
+{
+	if (currentTeam == Team::None) return;
+	// get local player controller/character
+	ADB_Player* localPlayer = Cast<ADB_Player>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (localPlayer && currentTeam == localPlayer->GetTeam())
+	{
+		if (BlueMat) ballMeshComp->SetMaterial(0, BlueMat);
+	}
+	else
+	{
+		if (RedMat) ballMeshComp->SetMaterial(0, RedMat);
+	}
 }
 
 void ADB_Ball::SetReturnToPlayer()
@@ -126,5 +166,11 @@ void ADB_Ball::SetReturnToPlayer()
 	ProjectileMovementComponent->HomingTargetComponent = GetOwner()->GetRootComponent();
 	ProjectileMovementComponent->HomingAccelerationMagnitude = 20000;
 
+}
+
+void ADB_Ball::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ADB_Ball, currentTeam);
 }
 

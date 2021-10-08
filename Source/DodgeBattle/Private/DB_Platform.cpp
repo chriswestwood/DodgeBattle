@@ -16,6 +16,7 @@
 // Sets default values
 ADB_Platform::ADB_Platform()
 {
+    bReplicates = true;
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
     if (!RootComponent)
@@ -44,6 +45,12 @@ ADB_Platform::ADB_Platform()
     hitAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("HitAudioComp"));
     hitAudioComponent->bAutoActivate = false;
     hitAudioComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+    // DEFAULTS
+    currentTeam = Team::None;
+    if (GetLocalRole() == ROLE_Authority)
+    {
+        DestructMeshComp->OnComponentHit.AddDynamic(this, &ADB_Platform::OnCompHit);
+    }
 }
 
 // Called when the game starts or when spawned
@@ -68,13 +75,13 @@ void ADB_Platform::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
             transform.SetLocation(Hit.ImpactPoint);
             UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEmitter, transform, true, EPSCPoolMethod::None, true);
         }
-        if (hitBall->GetTeam() == LastHitTeam)
+        if (hitBall->GetTeam() == currentTeam)
         {
             PlatformDestruct(OtherActor, Hit);            
         }
         else
         {                
-            UpdateTeam(hitBall->GetTeam());
+            SetTeam(hitBall->GetTeam());
         }
     }
 }
@@ -92,16 +99,26 @@ void ADB_Platform::Tick(float DeltaTime)
 
 }
 
-void ADB_Platform::UpdateTeam(TEnumAsByte<Team> newT)
+void ADB_Platform::SetTeam(TEnumAsByte<Team> newT)
 {
-    if(newT != None) LastHitTeam = newT;    
-    if (LastHitTeam == Team::None)
+    if (GetLocalRole() == ROLE_Authority)
     {
-        return;
+        currentTeam = newT;
+        OnTeamUpdate();
     }
+}
+
+void ADB_Platform::OnRep_Team()
+{
+    OnTeamUpdate();
+}
+
+void ADB_Platform::OnTeamUpdate()
+{
+    if(currentTeam == Team::None) return;
     // get local player controller/character
     ADB_Player* localPlayer = Cast<ADB_Player>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-    if (localPlayer && LastHitTeam == localPlayer->GetTeam())
+    if (localPlayer && currentTeam == localPlayer->GetTeam())
     {
         if (BlueMat) DestructMeshComp->SetMaterial(0, BlueMat);
     }
@@ -111,3 +128,8 @@ void ADB_Platform::UpdateTeam(TEnumAsByte<Team> newT)
     }
 }
 
+void ADB_Platform::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(ADB_Platform, currentTeam);
+}

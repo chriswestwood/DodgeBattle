@@ -24,18 +24,12 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION()
-		void UpdateCrosshair(FVector2D location, FVector2D direction, float distance);
-
-	UFUNCTION()
-		void UpdateStamina(float newStamina);
+	void UpdateStamina(float newStamina);
 
 	UPROPERTY(EditDefaultsOnly, Category = widget)
-		TSubclassOf<class UDB_CrosshairWidget> crosshairWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = widget)
-		TSubclassOf<class UDB_StaminaWidget> staminaWidgetClass;
+	TSubclassOf<class UDB_StaminaWidget> staminaWidgetClass;
 private:
-	class UDB_CrosshairWidget* crosshairWidget;
+
 	class UDB_StaminaWidget* staminaWidget;
 	
 };
