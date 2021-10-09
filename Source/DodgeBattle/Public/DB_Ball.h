@@ -4,9 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Components/StaticMeshComponent.h"
-#include "Components/SphereComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "EnumTeam.h"
 #include "EnumBall.h"
 #include "DB_Ball.generated.h"
@@ -15,6 +12,10 @@ UCLASS()
 class DODGEBATTLE_API ADB_Ball : public AActor
 {
 	GENERATED_BODY()
+
+		
+	// Called when Created
+	virtual void BeginPlay() override;
 
 public:
 	// INIT
@@ -49,23 +50,33 @@ public:
 	UFUNCTION()
 	void SetReturnToPlayer();
 
-
-
 protected:
 
-	// Called when Created
-	virtual void BeginPlay() override;
 	// On Hit Function
 	UFUNCTION()
 	void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
-	// Throw Momentum
-	UPROPERTY()
-	FVector momentum;
+	// COMPONENTS
+	// Ball Mesh Component
+	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+	class UStaticMeshComponent* ballMeshComp;
+	// Ball Collision Component
+	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+	class USphereComponent* ballCollisionComp;
+	// Ball Movement Component.
+	UPROPERTY(VisibleAnywhere, Category = Movement)
+	class UProjectileMovementComponent* ProjectileMovementComponent;
+	// Homing Point
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Player, meta = (AllowPrivateAccess = "true"))
+	class USceneComponent* HomingPoint;
 
+	//BALL VARIABLES
 	// Current Team
 	UPROPERTY(ReplicatedUsing = OnRep_Team,EditAnywhere, BlueprintReadWrite, Category = Team)
 	TEnumAsByte<Team> currentTeam;
+	// Ball Type
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
+	TEnumAsByte<BallType> ballType;
 	// Blue Material - for ally team
 	UPROPERTY()
 	UMaterialInterface* BlueMat;
@@ -73,21 +84,10 @@ protected:
 	UPROPERTY()
 	UMaterialInterface* RedMat;
 
-	// Ball Type
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
-	TEnumAsByte<BallType> ballType;
-	// Ball Mesh Component
-	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
-	UStaticMeshComponent* ballMeshComp;
-	// Ball Collision Component
-	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
-	USphereComponent* ballCollisionComp;
-	// Ball Movement Component.
-	UPROPERTY(VisibleAnywhere, Category = Movement)
-	UProjectileMovementComponent* ProjectileMovementComponent;
-	// Homing Point
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Player, meta = (AllowPrivateAccess = "true"))
-	class USceneComponent* HomingPoint;
+	// MOVEMENT
+	// Throw Momentum
+	UPROPERTY()
+	FVector momentum;
 	// flag to state returning to player
 	bool bReturnToPlayer;
 	// Return Timer - if time passes will auto return to player
@@ -98,4 +98,16 @@ protected:
 	// number of times the ball bounces before returning to player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	int hitReturnCount;
+
+	//PARTICLE SYSTEM
+	// Particle Effect
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "VFX")
+		UParticleSystem* HitEmitter;
+
+	// AUDIO
+	// Audio on hit
+	UPROPERTY()
+	class USoundCue* hitAudioCue;
+	UPROPERTY()
+	class UAudioComponent* hitAudioComponent;
 };

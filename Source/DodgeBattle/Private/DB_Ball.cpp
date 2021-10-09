@@ -6,6 +6,13 @@
 #include "DB_Platform.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/SphereComponent.h"
+#include "Particles/ParticleSystem.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ADB_Ball::ADB_Ball()
@@ -54,10 +61,16 @@ ADB_Ball::ADB_Ball()
 	{
 		RedMat = HexRedMatInstance.Object;
 	}
+	// SOUNDS
+	static ConstructorHelpers::FObjectFinder<USoundCue> hitCue(TEXT("SoundCue'/Game/Assets/DB_BallHitSoundCue.DB_BallHitSoundCue'"));
+	if (hitCue.Succeeded()) hitAudioCue = hitCue.Object;
+	hitAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("HitAudioComp"));
+	hitAudioComponent->bAutoActivate = false;
+	hitAudioComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
 	// Set Where the ball will "home" in on
 	HomingPoint = CreateDefaultSubobject<USceneComponent>(TEXT("HomingPoint"));
 	HomingPoint->SetupAttachment(RootComponent);
-
 	hitReturnCount = 2;
 	returnTimer = 2;
 
@@ -71,6 +84,9 @@ ADB_Ball::ADB_Ball()
 void ADB_Ball::BeginPlay()
 {
 	Super::BeginPlay();
+	if (hitAudioCue->IsValidLowLevelFast()) {
+		hitAudioComponent->SetSound(hitAudioCue);
+	}
 }
 
 void ADB_Ball::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -79,6 +95,13 @@ void ADB_Ball::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrim
 	ADB_Platform* hitPlatform = Cast<ADB_Platform>(OtherActor);
 	if (hitPlatform)
 	{
+		hitAudioComponent->Play();
+		if (HitEmitter)
+		{
+			FTransform transform = FTransform(UKismetMathLibrary::MakeRotationFromAxes(Hit.ImpactNormal, FVector(0, 0, 0), FVector(0, 0, 0)));
+			transform.SetLocation(Hit.ImpactPoint);
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEmitter, transform, true, EPSCPoolMethod::None, true);
+		}
 		if (hitCount >= hitReturnCount && !bReturnToPlayer)SetReturnToPlayer();
 		return;
 	}
@@ -165,7 +188,6 @@ void ADB_Ball::SetReturnToPlayer()
 	ProjectileMovementComponent->bIsHomingProjectile = true;
 	ProjectileMovementComponent->HomingTargetComponent = GetOwner()->GetRootComponent();
 	ProjectileMovementComponent->HomingAccelerationMagnitude = 20000;
-
 }
 
 void ADB_Ball::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const

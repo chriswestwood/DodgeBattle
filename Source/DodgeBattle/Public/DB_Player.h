@@ -36,7 +36,6 @@ public:
 	// Remove Current Ball
 	void RemoveCurrentBall();
 
-
 	// Change team, and update the Material to show the correct colour
 	void SetTeam(TEnumAsByte<Team> newT = None);
 	// Get Team
@@ -45,14 +44,23 @@ public:
 	UFUNCTION()
 	void OnRep_Team();
 	// update the Material to show the correct colour
-	void OnTeamUpdate();
+	void OnTeamUpdate(TEnumAsByte<Team> compareTeam);
+	// Update Textures based on what team the pawn is on
+	UFUNCTION()
+	void UpdateTextures();
 
 protected:
 	/* FUNCTIONS */
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	//
+
+	// Dodge Call Input
+	void DodgeStart();
+
+	// Server call for Dodge
+	UFUNCTION(Server, Reliable)
 	void Dodge();
+
 	// Start Throw
 	UFUNCTION()
 	void ThrowCharge();
@@ -70,11 +78,13 @@ protected:
 	void MoveForward(float Value);
 	/** Called for side to side input */
 	void MoveRight(float Value);
-	//
+
+	// Server call for player hit
 	UFUNCTION()
 	void OnPlayerHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-	//
-	UFUNCTION()
+
+	// Destroy Platform destructable
+	UFUNCTION(NetMulticast, Reliable)
 	void PlayerDestruct(AActor* killActor, const FHitResult& Hit);
 
 	/**

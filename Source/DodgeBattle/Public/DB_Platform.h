@@ -35,7 +35,7 @@ public:
 	UFUNCTION()
 	void OnRep_Team();
 	// update the Material to show the correct colour
- 	void OnTeamUpdate();
+ 	void OnTeamUpdate(TEnumAsByte<Team> compareTeam);
 
 
 protected:
@@ -44,8 +44,9 @@ protected:
 
 	UFUNCTION()
 	void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-	//
-	UFUNCTION()
+
+	// Destroy Platform destructable
+	UFUNCTION(NetMulticast, Reliable)
 	void PlatformDestruct(AActor* killActor, const FHitResult& Hit);
 
 	// VARIABLES
@@ -60,15 +61,5 @@ protected:
 	// Red Material - for enemy team
 	UPROPERTY()
 	UMaterialInterface* RedMat;
-
-	// Particle Effect
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "VFX")
-	UParticleSystem* HitEmitter;
-
-	// Audio on hit
-	UPROPERTY()
-	class USoundCue* hitAudioCue;
-	UPROPERTY()
-	class UAudioComponent* hitAudioComponent;
 
 };

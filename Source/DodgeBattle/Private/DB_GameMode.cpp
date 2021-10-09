@@ -8,6 +8,8 @@
 #include "DB_GameState.h"
 #include "DB_PlayerState.h"
 #include "DB_SpectatorPawn.h"
+#include "DB_PlayerController.h"
+#include "DB_PlayerState.h"
 
 ADB_GameMode::ADB_GameMode()
 {
@@ -26,6 +28,8 @@ ADB_GameMode::ADB_GameMode()
 	GameStateClass = ADB_GameState::StaticClass();
 	PlayerStateClass = ADB_PlayerState::StaticClass();
 	SpectatorClass = ADB_SpectatorPawn::StaticClass();
+	PlayerControllerClass = ADB_PlayerController::StaticClass();
+	PlayerStateClass = ADB_PlayerState::StaticClass();
 
 	bStartPlayersAsSpectators = true;
 	bDelayedStart = true;
