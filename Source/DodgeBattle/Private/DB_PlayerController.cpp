@@ -7,5 +7,18 @@ void ADB_PlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	ADB_Player* playerPawn = Cast<ADB_Player>(InPawn);
-	if(playerPawn) playerPawn->UpdateTextures();		
+	if (playerPawn)
+	{
+		playerPawn->SetTeam(currentTeam);
+	}
+}
+
+TEnumAsByte<Team> ADB_PlayerController::GetTeam()
+{
+	return currentTeam;
+}
+
+void ADB_PlayerController::SetTeam(TEnumAsByte<Team> newT)
+{
+	currentTeam = newT;
 }

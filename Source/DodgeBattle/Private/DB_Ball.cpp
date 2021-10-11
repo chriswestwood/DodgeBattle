@@ -186,7 +186,7 @@ void ADB_Ball::SetReturnToPlayer()
 {
 	bReturnToPlayer = true;
 	ProjectileMovementComponent->bIsHomingProjectile = true;
-	ProjectileMovementComponent->HomingTargetComponent = GetOwner()->GetRootComponent();
+	ProjectileMovementComponent->HomingTargetComponent = Cast<ADB_Player>(GetOwner())->GetReturnPoint();
 	ProjectileMovementComponent->HomingAccelerationMagnitude = 20000;
 }
 

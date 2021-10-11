@@ -15,6 +15,13 @@ class DODGEBATTLE_API ADB_TeamStart : public APlayerStart
 {
 	GENERATED_BODY()
 
+public:
+	UFUNCTION(BlueprintCallable)
+	TEnumAsByte<Team> GetTeam();
+	UFUNCTION(BlueprintCallable)
+	void SetTeam(TEnumAsByte<Team> newT);
+
+protected:
 		// Team Spawn
 		UPROPERTY(EditAnywhere, Category = team)
 		TEnumAsByte<Team> currentTeam;

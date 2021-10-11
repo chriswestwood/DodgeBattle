@@ -35,7 +35,8 @@ public:
 	class UDestructibleComponent* DestructMeshComp;
 	// Remove Current Ball
 	void RemoveCurrentBall();
-
+	// Returns FollowCamera
+	FORCEINLINE class USceneComponent* GetReturnPoint() const { return ReturnPoint; }
 	// Change team, and update the Material to show the correct colour
 	void SetTeam(TEnumAsByte<Team> newT = None);
 	// Get Team
@@ -48,6 +49,9 @@ public:
 	// Update Textures based on what team the pawn is on
 	UFUNCTION()
 	void UpdateTextures();
+	//Return follow Camera to enable when possessed
+	UFUNCTION()
+	void SetFollowCameraActive();
 
 protected:
 	/* FUNCTIONS */
@@ -116,6 +120,9 @@ protected:
 	/** Throw Point */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Player, meta = (AllowPrivateAccess = "true"))
 	class USceneComponent* ThrowPoint;
+	/** Ball Return Point */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Player, meta = (AllowPrivateAccess = "true"))
+	class USceneComponent* ReturnPoint;
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		float BaseTurnRate;

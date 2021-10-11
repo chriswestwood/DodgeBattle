@@ -75,7 +75,12 @@ ADB_Player::ADB_Player()
 	// Add the Throw Point - so we can define where to spawn the ball from
 	ThrowPoint = CreateDefaultSubobject<USceneComponent>(TEXT("ThrowPoint"));
 	ThrowPoint->SetupAttachment(RootComponent);
-	ThrowPoint->SetRelativeLocation(FVector(10, 60, 60));
+	ThrowPoint->SetRelativeLocation(FVector(60, 60, 70));
+
+	// Add the Return Point - so we can define where the ball will return to
+	ReturnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("ReturnPoint"));
+	ReturnPoint->SetupAttachment(RootComponent);
+	ReturnPoint->SetRelativeLocation(FVector(0, 0, 50));
 	
 	if (!DestructMeshComp)
 	{
@@ -99,11 +104,11 @@ ADB_Player::ADB_Player()
 		GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ADB_Player::OnPlayerHit);
 	}
 	// Vars
-	DodgeCooldown = 5;
+	DodgeCooldown = 2;
 	DodgeCooldownTimer = 0;
 	moveSpeed = 1.0f;
 	dodgeSpeed = 5000.0f;
-	currentTeam = Team::Team1;
+	currentTeam = Team::None;
 }
 
 void ADB_Player::BeginPlay()
@@ -128,6 +133,11 @@ void ADB_Player::UpdateTextures()
 	{
 		Cast<ADB_Player>(A)->OnTeamUpdate(GetTeam());
 	}
+}
+
+void ADB_Player::SetFollowCameraActive()
+{
+	FollowCamera->SetActive(true);
 }
 
 // Called every frame
@@ -189,17 +199,6 @@ void ADB_Player::OnRep_Team()
 
 void ADB_Player::OnTeamUpdate(TEnumAsByte<Team> compareTeam)
 {
-	//if (currentTeam == Team::None) return;
-	//// get local player controller/character
-	//ADB_Player* localPlayer = Cast<ADB_Player>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	//if (localPlayer && currentTeam == localPlayer->GetTeam())
-	//{
-	//	if (BlueMat) GetMesh()->SetMaterial(0, BlueMat);
-	//}
-	//else
-	//{
-	//	if (RedMat) GetMesh()->SetMaterial(0, RedMat);
-	//}
 	if (currentTeam == Team::None) return;
 	// get local player controller/character
 	ADB_Player* localPlayer = Cast<ADB_Player>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));

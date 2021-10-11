@@ -3,3 +3,13 @@
 
 #include "DB_TeamStart.h"
 
+TEnumAsByte<Team> ADB_TeamStart::GetTeam()
+{
+	return currentTeam;
+}
+
+void ADB_TeamStart::SetTeam(TEnumAsByte<Team> newT)
+{
+	currentTeam = newT;
+}
+

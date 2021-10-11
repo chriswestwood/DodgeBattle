@@ -15,4 +15,8 @@ class DODGEBATTLE_API ADB_GameMode : public AGameMode
 	GENERATED_BODY()
 public:
 	ADB_GameMode();
+
+	// override player spawning
+	virtual void RestartPlayer(AController* NewPlayer) override;
+
 };
