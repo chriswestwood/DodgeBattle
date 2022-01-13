@@ -1,4 +1,3 @@
-![Title](/Title.jpg)
 
 "Dodge Battle" is a take on Disneys' "Tron" - Disc Wars. 
  
@@ -6,13 +5,17 @@
 
 ## Features
 
+<a>
 <img alt="Replication" src="/DodgeRepl.gif" width="50%">
+</a>
 
 Platforms are coloured based on the last team to hit it with a projectile, blue - friendly ; red - enemy ; white - none.
 
 The image above displays the 2 players on either side of the play area, they are on different teams. As you can see the colours are dependant of their own team.
 
+<a>
 <img alt="Throwing" src="/DodgeHit.gif" width="50%">
+</a>
 
 Projectiles can be thrown and caught (as long as its blue). A single hit will down a player from a red projectile.
 
