@@ -5,17 +5,13 @@
 
 ## Features
 
-<a>
-<img alt="Replication" src="https://github.com/chriswestwood/DodgeBattle/blob/d2e490ba42461edb82573a0ea05beca85b1bc6d1/DodgeRepl.gif" width="50%">
-</a>
+![Replication](/DodgeRepl.gif)
 
 Platforms are coloured based on the last team to hit it with a projectile, blue - friendly ; red - enemy ; white - none.
 
 The image above displays the 2 players on either side of the play area, they are on different teams. As you can see the colours are dependant of their own team.
 
-<a>
-<img alt="Throwing" src="https://github.com/chriswestwood/DodgeBattle/blob/d2e490ba42461edb82573a0ea05beca85b1bc6d1/DodgeHit.gif" width="50%">
-</a>
+![Projectiles](/DodgeHit.gif)
 
 Projectiles can be thrown and caught (as long as its blue). A single hit will down a player from a red projectile.
 
